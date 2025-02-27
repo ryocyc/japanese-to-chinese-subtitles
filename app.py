@@ -1,7 +1,7 @@
 import streamlit as st
 import whisper
 from googletrans import Translator
-import moviepy.editor as mp
+import ffmpeg
 import os
 
 # 標題
@@ -18,12 +18,15 @@ if uploaded_file is not None:
 
     # 從影片中提取音頻
     audio_path = "temp_audio.wav"
-    video = mp.VideoFileClip(video_path)
-    video.audio.write_audiofile(audio_path)
+    try:
+        ffmpeg.input(video_path).output(audio_path).run()
+    except ffmpeg.Error as e:
+        st.write(f"提取音頻失敗：{e}")
+        st.stop()
 
     # 使用 Whisper 進行語音轉文字
     st.write("正在轉換語音為文字...")
-    model = whisper.load_model("medium")
+    model = whisper.load_model("base")  # 使用 base 模型（較快，但準確度較低）
     result = model.transcribe(audio_path)
 
     # 使用 Google 翻譯 API 進行翻譯
