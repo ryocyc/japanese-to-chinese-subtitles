@@ -27,6 +27,9 @@ if uploaded_file is not None:
         )
     except ffmpeg.Error as e:
         st.write(f"提取音頻失敗：{e.stderr.decode('utf-8')}")
+        # 刪除臨時影片檔案
+        if os.path.exists(video_path):
+            os.remove(video_path)
         st.stop()
 
     # 使用 Whisper 進行語音轉文字
@@ -90,6 +93,9 @@ if uploaded_file is not None:
         st.download_button("下載 SRT 檔案", f, file_name="subtitles.srt")
 
     # 清理臨時檔案
-    os.remove(video_path)
-    os.remove(audio_path)
-    os.remove(srt_path)
+    if os.path.exists(video_path):
+        os.remove(video_path)
+    if os.path.exists(audio_path):
+        os.remove(audio_path)
+    if os.path.exists(srt_path):
+        os.remove(srt_path)
