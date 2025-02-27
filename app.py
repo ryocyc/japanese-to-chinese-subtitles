@@ -7,6 +7,34 @@ import os
 # 標題
 st.title("日文語音轉中文字幕")
 
+# 檢查並安裝 ffmpeg
+def ensure_ffmpeg_installed():
+    ffmpeg_path = "/usr/bin/ffmpeg"
+    if not os.path.exists(ffmpeg_path):
+        st.write("正在安裝 ffmpeg...")
+        try:
+            # 安裝 ffmpeg
+            subprocess.run(
+                ["apt-get", "update"],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            subprocess.run(
+                ["apt-get", "install", "-y", "ffmpeg"],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            st.write("ffmpeg 安裝完成！")
+        except subprocess.CalledProcessError as e:
+            st.write(f"安裝 ffmpeg 失敗：{e.stderr.decode('utf-8')}")
+            st.stop()
+    return ffmpeg_path
+
+# 確保 ffmpeg 已安裝
+ffmpeg_path = ensure_ffmpeg_installed()
+
 # 上傳影片檔案
 uploaded_file = st.file_uploader("上傳影片檔案", type=["mp4", "avi", "mov"])
 
@@ -20,7 +48,7 @@ if uploaded_file is not None:
     audio_path = "temp_audio.wav"
     try:
         subprocess.run(
-            ["ffmpeg", "-i", video_path, "-q:a", "0", "-map", "a", audio_path],
+            [ffmpeg_path, "-i", video_path, "-q:a", "0", "-map", "a", audio_path],
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
