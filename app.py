@@ -19,9 +19,14 @@ if uploaded_file is not None:
     # 從影片中提取音頻
     audio_path = "temp_audio.wav"
     try:
-        ffmpeg.input(video_path).output(audio_path).run()
+        (
+            ffmpeg
+            .input(video_path)
+            .output(audio_path, ac=1, ar=16000)  # 設置音頻格式
+            .run(capture_stdout=True, capture_stderr=True)
+        )
     except ffmpeg.Error as e:
-        st.write(f"提取音頻失敗：{e}")
+        st.write(f"提取音頻失敗：{e.stderr.decode('utf-8')}")
         st.stop()
 
     # 使用 Whisper 進行語音轉文字
