@@ -1,7 +1,7 @@
 import streamlit as st
 import whisper
 from googletrans import Translator
-import ffmpeg
+import subprocess
 import os
 
 # 標題
@@ -19,15 +19,14 @@ if uploaded_file is not None:
     # 從影片中提取音頻
     audio_path = "temp_audio.wav"
     try:
-        (
-            ffmpeg
-            .input(video_path)
-            .output(audio_path, ac=1, ar=16000)  # 設置音頻格式
-            .run(capture_stdout=True, capture_stderr=True)
+        subprocess.run(
+            ["ffmpeg", "-i", video_path, "-q:a", "0", "-map", "a", audio_path],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
-    except ffmpeg.Error as e:
+    except subprocess.CalledProcessError as e:
         st.write(f"提取音頻失敗：{e.stderr.decode('utf-8')}")
-        # 刪除臨時影片檔案
         if os.path.exists(video_path):
             os.remove(video_path)
         st.stop()
