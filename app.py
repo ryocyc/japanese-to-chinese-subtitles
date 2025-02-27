@@ -1,7 +1,7 @@
 import streamlit as st
 import whisper
 from googletrans import Translator
-from moviepy.editor import VideoFileClip
+from moviepy.editor import VideoFileClip  # 確保正確導入
 import os
 
 # 標題
