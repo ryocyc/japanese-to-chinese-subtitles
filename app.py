@@ -1,7 +1,7 @@
 import streamlit as st
 import whisper
 from googletrans import Translator
-from pydub import AudioSegment
+from moviepy.editor import VideoFileClip
 import os
 
 # 標題
@@ -19,9 +19,9 @@ if uploaded_file is not None:
     # 從影片中提取音頻
     audio_path = "temp_audio.wav"
     try:
-        # 使用 pydub 提取音頻
-        audio = AudioSegment.from_file(video_path)
-        audio.export(audio_path, format="wav")
+        # 使用 moviepy 提取音頻
+        video = VideoFileClip(video_path)
+        video.audio.write_audiofile(audio_path)
     except Exception as e:
         st.write(f"提取音頻失敗：{e}")
         if os.path.exists(video_path):
